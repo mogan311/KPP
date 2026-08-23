@@ -136,7 +136,10 @@ const AppState = {
   transportMode: "",
   vehicleNo: "",
   supplyDate: getTodayDateString(),
-  placeOfSupply: "Kilpattu",
+  // Left blank by default — Place of Supply is invoice-specific and should
+  // only ever be filled in by the admin typing it themselves, never
+  // pre-filled or auto-derived from a customer record.
+  placeOfSupply: "",
   
   // Product Items (Array of 1 to 15 items)
   items: [
@@ -359,10 +362,10 @@ function applyClientAutoFill(found) {
   document.getElementById("input-receiver-phone").value = found.phone || "";
   document.getElementById("input-state-name").value = found.state;
   document.getElementById("input-state-code").value = found.stateCode;
-  if (found.placeOfSupply) {
-    document.getElementById("input-place-supply").value = found.placeOfSupply;
-    AppState.placeOfSupply = found.placeOfSupply;
-  }
+  // Place of Supply is intentionally NOT auto-filled here — it's
+  // invoice-specific (where the goods are actually delivered, which can
+  // differ from the customer's saved address) and should only ever be
+  // typed in directly by the admin.
 
   AppState.billedToName = found.name;
   AppState.billedToAddress = found.address;
@@ -1398,7 +1401,8 @@ function loadSampleInvoiceData() {
   document.getElementById('input-reverse-charge').value = 'NO';
   document.getElementById('input-transport-mode').value = 'Road';
   document.getElementById('input-vehicle-no').value = 'TN 25 AB 1234';
-  document.getElementById('input-place-supply').value = 'Kilpattu';
+  // Place of Supply is left blank by sample data too — it's always a
+  // manual, invoice-specific entry, never auto-filled.
 
   AppState.billedToName = client.name;
   AppState.billedToAddress = client.address;
@@ -1409,7 +1413,6 @@ function loadSampleInvoiceData() {
   AppState.reverseCharge = 'NO';
   AppState.transportMode = 'Road';
   AppState.vehicleNo = 'TN 25 AB 1234';
-  AppState.placeOfSupply = 'Kilpattu';
 
   AppState.items = [
     { id: 1, name: 'Pure Silk Saree - Traditional Zari', hsn: '5007', meter: 6.20, qty: 10, rate: 6500, amount: 65000 },
