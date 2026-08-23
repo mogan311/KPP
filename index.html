@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPP - Tax Invoice Portal | K.P. Paramathman & Brothers</title>
+  <meta name="description"
+    content="Professional GST Tax Invoice Portal for K.P. Paramathman & Brothers - High Class Hand-Loom Silk Saree Manufacturers">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=Dancing+Script:wght@500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- jsPDF for Exact Vector PDF Generation (primary) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2pdf fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="light-theme">
+
+  <!-- =========================================================================
+       1. ADMIN LOGIN VIEW
+       ========================================================================= -->
+  <section id="login-view" class="login-view-wrapper active-view">
+    <div class="login-bg-overlay"></div>
+    <div class="login-bg-watermark">
+      <img src="only_logo_B.png" alt="KPP Watermark" id="login-watermark-img" onerror="this.src='only_logo.png'">
+    </div>
+
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-vinayagar">
+            <img src="vinayagar.png" alt="Vinayagar" class="vinayagar-thumb">
+          </div>
+          <h1 class="brand-title">K.P. PARAMATHMAN &amp; BROTHERS</h1>
+          <p class="brand-subtitle">High Class Hand-Loom Silk Saree Manufacturers</p>
+          <div class="login-badge">
+            <span class="lock-icon">🔒</span>
+            <span>Admin Authentication Portal</span>
+          </div>
+        </div>
+
+        <form id="login-form" class="login-form" autocomplete="off">
+          <div class="form-group">
+            <label for="admin-username" class="form-label">Admin Username</label>
+            <div class="input-with-icon">
+              <span class="field-icon">👤</span>
+              <input type="text" id="admin-username" class="form-control" placeholder="Enter admin username" required
+                autofocus value="admin">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="admin-password" class="form-label">Password</label>
+            <div class="input-with-icon">
+              <span class="field-icon">🔑</span>
+              <input type="password" id="admin-password" class="form-control" placeholder="Enter password" required
+                value="admin123">
+              <button type="button" class="toggle-pwd-btn" id="toggle-pwd-btn"
+                title="Toggle password visibility">👁️</button>
+            </div>
+          </div>
+
+          <div class="login-meta-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="remember-me" checked>
+              <span>Keep me signed in</span>
+            </label>
+            <span class="demo-credentials">Demo: <b>admin</b> / <b>admin123</b></span>
+          </div>
+
+          <button type="submit" class="btn btn-login" id="login-btn">
+            <span>Secure Admin Sign In</span>
+            <span class="btn-arrow">&rarr;</span>
+          </button>
+
+          <div id="login-error-msg" class="login-error-alert" style="display: none;">
+            ⚠️ Invalid credentials. Please enter valid admin details.
+          </div>
+        </form>
+
+        <div class="login-footer">
+          <p>GSTIN: <b>33BMXPP5419A1ZX</b> | Kilpattu - 606 907</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       2. INVOICE PORTAL MAIN VIEW
+       ========================================================================= -->
+  <section id="portal-view" class="portal-view-wrapper" style="display: none;">
+
+    <!-- Top App Navigation Header -->
+    <header class="app-topbar no-print">
+      <div class="topbar-left">
+        <div class="topbar-logo">
+          <img src="logo_navbar.png" alt="KPP Logo" class="topbar-logo-img">
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="topbar-title">
+          <div class="topbar-brand">KPP &amp; BROTHERS</div>
+          <div class="topbar-tagline">Silk Saree</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="admin-profile">
+          <span class="admin-avatar">👤</span>
+          <span class="admin-name">Admin</span>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪 Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace: Section Nav + Section Editor + (on-demand) Live Sheet Preview -->
+    <main class="portal-main-layout" id="portal-main-layout">
+
+      <!-- =====================================================================
+           LEFT PANEL: SECTION NAVIGATION LIST
+           ===================================================================== -->
+      <aside class="section-nav-sidebar no-print" id="section-nav-sidebar">
+
+        <div class="sidebar-header">
+          <h2>Invoice Configuration</h2>
+          <p>Complete each section below, then preview &amp; download.</p>
+        </div>
+
+        <nav class="section-nav-list" id="section-nav-list">
+          <button type="button" class="section-nav-item is-active" data-section="1">
+            <span class="nav-item-icon">1</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Invoice Details &amp; Copy Type</span>
+              <span class="nav-item-sub">Invoice no., date &amp; copy type</span>
+            </span>
+            <span class="nav-item-status" data-status-for="1"></span>
+          </button>
+
+          <button type="button" class="section-nav-item" data-section="2">
+            <span class="nav-item-icon">2</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Details of Receiver</span>
+              <span class="nav-item-sub">Billed to name, address &amp; GSTIN</span>
+            </span>
+            <span class="nav-item-status" data-status-for="2"></span>
+          </button>
+
+          <button type="button" class="section-nav-item" data-section="3">
+            <span class="nav-item-icon">3</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Supply &amp; Transportation</span>
+              <span class="nav-item-sub">State, transport mode &amp; vehicle</span>
+            </span>
+            <span class="nav-item-status" data-status-for="3"></span>
+          </button>
+
+          <button type="button" class="section-nav-item" data-section="4">
+            <span class="nav-item-icon">4</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Product Items List</span>
+              <span class="nav-item-sub">Add sarees, qty &amp; rate</span>
+            </span>
+            <span class="nav-item-status" data-status-for="4"></span>
+          </button>
+
+          <button type="button" class="section-nav-item" data-section="5">
+            <span class="nav-item-icon">5</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Tax, Discount &amp; Financials</span>
+              <span class="nav-item-sub">GST %, discount &amp; totals</span>
+            </span>
+            <span class="nav-item-status" data-status-for="5"></span>
+          </button>
+
+          <button type="button" class="section-nav-item" data-section="6">
+            <span class="nav-item-icon">6</span>
+            <span class="nav-item-body">
+              <span class="nav-item-title">Bank, Watermark, Seal &amp; Signature</span>
+              <span class="nav-item-sub">Bank details &amp; bill toggles</span>
+            </span>
+            <span class="nav-item-status" data-status-for="6"></span>
+          </button>
+        </nav>
+
+        <div class="nav-preview-cta">
+          <button type="button" class="btn btn-preview-invoice btn-block btn-lg" id="btn-open-preview" disabled>
+            <span>👁️ Preview Invoice</span>
+          </button>
+          <p class="preview-cta-hint" id="preview-cta-hint">Fill all required fields marked * to unlock the preview.</p>
+        </div>
+
+      </aside>
+
+      <!-- =====================================================================
+           MIDDLE PANEL: ACTIVE SECTION EDITOR (big, spacious, one section at a time)
+           ===================================================================== -->
+      <section class="editor-main-panel no-print" id="editor-main-panel">
+
+        <form id="invoice-editor-form" class="editor-form" onsubmit="event.preventDefault();">
+
+          <!-- Section 1: Copy Type & Invoice Metadata -->
+          <div class="form-section-card panel-active" data-section-panel="1">
+            <div class="section-card-title">
+              <span class="step-num">1</span>
+              <h3>Invoice Details &amp; Copy Type</h3>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-copy-type">Invoice Copy Type</label>
+                <select id="input-copy-type" class="form-control">
+                  <option value="Original for Recipient" selected>Original for Recipient</option>
+                  <option value="Duplicate for Transporter">Duplicate for Transporter</option>
+                  <option value="Triplicate for Supplier">Triplicate for Supplier</option>
+                  <option value="Extra Copy">Extra Copy</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="input-invoice-no">Invoice No. <span class="req">*</span></label>
+                <input type="text" id="input-invoice-no" class="form-control font-bold"
+                  placeholder="e.g. 101 / KPP-2026-01" value="101" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-invoice-date">Invoice Date <span class="req">*</span></label>
+                <input type="date" id="input-invoice-date" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label for="input-reverse-charge">Reverse Charge <span class="sub-label">(Optional)</span></label>
+                <select id="input-reverse-charge" class="form-control">
+                  <option value="" selected>-- Leave blank --</option>
+                  <option value="NO">NO</option>
+                  <option value="YES">YES</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Details of Receiver Billed To -->
+          <div class="form-section-card" data-section-panel="2">
+            <div class="section-card-title">
+              <span class="step-num">2</span>
+              <h3>Details of Receiver (Billed To)</h3>
+            </div>
+
+            <div class="form-group">
+              <label for="select-client-db">Select Customer from Database (Auto-Fill)</label>
+              <select id="select-client-db" class="form-control client-selector">
+                <option value="">-- Choose Client or Enter Custom Below --</option>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="input-receiver-gstin">Receiver GSTIN <span class="req">*</span></label>
+              <input type="text" id="input-receiver-gstin" class="form-control uppercase"
+                placeholder="e.g. 33AAAAA0000A1Z5" maxlength="15">
+            </div>
+
+            <div class="form-group">
+              <label for="input-billed-to-name">Customer / Firm Name (To:) <span class="req">*</span></label>
+              <input type="text" id="input-billed-to-name" class="form-control font-bold"
+                placeholder="e.g. M/s. Sri Lakshmi Silks &amp; Sarees" required>
+            </div>
+
+            <div class="form-group">
+              <label for="input-billed-to-address">Full Address</label>
+              <textarea id="input-billed-to-address" rows="2" class="form-control"
+                placeholder="Door No, Street, Landmark, City, State - Pincode"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="input-receiver-phone">Phone / Cell (Optional)</label>
+              <input type="text" id="input-receiver-phone" class="form-control" placeholder="e.g. 9876543210">
+            </div>
+          </div>
+
+          <!-- Section 3: Transport & Supply Details -->
+          <div class="form-section-card" data-section-panel="3">
+            <div class="section-card-title">
+              <span class="step-num">3</span>
+              <h3>Supply &amp; Transportation Details</h3>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-state-name">STATE <span class="req">*</span></label>
+                <input type="text" id="input-state-name" class="form-control" value="TAMIL NADU" required>
+              </div>
+
+              <div class="form-group">
+                <label for="input-state-code">State Code</label>
+                <input type="text" id="input-state-code" class="form-control" value="33">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-transport-mode">Transportation Mode <span class="sub-label">(Optional)</span></label>
+                <input type="text" id="input-transport-mode" class="form-control"
+                  placeholder="e.g. Road / Lorry / Courier">
+              </div>
+
+              <div class="form-group">
+                <label for="input-vehicle-no">Vehicle No. <span class="sub-label">(Optional)</span></label>
+                <input type="text" id="input-vehicle-no" class="form-control uppercase"
+                  placeholder="e.g. TN 25 AB 1234">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-supply-date">Date of Supply <span class="req">*</span></label>
+                <input type="date" id="input-supply-date" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label for="input-place-supply">Place of Supply <span class="sub-label">(Optional)</span></label>
+                <input type="text" id="input-place-supply" class="form-control"
+                  placeholder="e.g. Kilpattu / Arani / Chennai" value="Kilpattu">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Product Items List (Min 1, Max 15) -->
+          <div class="form-section-card" data-section-panel="4">
+            <div class="section-card-title flex-between">
+              <div class="flex-align">
+                <span class="step-num">4</span>
+                <h3>Product Items List <span class="badge-count" id="items-count-badge">1 / 15</span></h3>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-add-product-row">
+                <span>➕ Add Product</span>
+              </button>
+            </div>
+            <p class="section-helper-text">Add between 1 and 15 product items. Amount = Qty &times; Rate.</p>
+
+            <!-- Product Items Container -->
+            <div id="product-items-form-list" class="product-items-form-list">
+              <!-- Dynamically rendered rows -->
+            </div>
+
+            <div class="process-action-bar">
+              <button type="button" class="btn btn-success btn-block" id="btn-process-calculations">
+                <span>⚡ Calculate &amp; Process All Totals</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 5: Discounts, Taxes & Financials -->
+          <div class="form-section-card" data-section-panel="5">
+            <div class="section-card-title">
+              <span class="step-num">5</span>
+              <h3>Tax, Discount &amp; Bill Financials</h3>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-discount">Discount (₹)</label>
+                <input type="number" id="input-discount" class="form-control" placeholder="0.00" value="0" min="0"
+                  step="any">
+              </div>
+
+              <div class="form-group">
+                <label for="input-amount-before-tax">Total Amount Before Tax (₹)</label>
+                <input type="number" id="input-amount-before-tax" class="form-control font-bold" placeholder="0.00"
+                  step="any">
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="input-cgst-pct">CGST %</label>
+                <div class="input-suffix">
+                  <input type="number" id="input-cgst-pct" class="form-control" placeholder="2.5" value="2.5"
+                    step="any">
+                  <span>%</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="input-sgst-pct">SGST %</label>
+                <div class="input-suffix">
+                  <input type="number" id="input-sgst-pct" class="form-control" placeholder="2.5" value="2.5"
+                    step="any">
+                  <span>%</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="input-igst-pct">IGST %</label>
+                <div class="input-suffix">
+                  <input type="number" id="input-igst-pct" class="form-control" placeholder="0" value="0" step="any">
+                  <span>%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="input-tax-amount-gst">Tax Amount : GST (₹) <span class="sub-label">(User Input /
+                    Calculated)</span></label>
+                <input type="number" id="input-tax-amount-gst" class="form-control" placeholder="0.00" step="any">
+              </div>
+
+              <div class="form-group">
+                <label for="input-amount-after-tax">Total Amount After Tax (₹) <span class="sub-label">(Final
+                    Payable)</span></label>
+                <input type="number" id="input-amount-after-tax" class="form-control font-bold text-success"
+                  placeholder="0.00" step="any">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="input-gst-reverse-charge">GST Payable on Reverse Charge (₹)</label>
+              <input type="number" id="input-gst-reverse-charge" class="form-control" placeholder="0.00" value="0"
+                step="any">
+            </div>
+
+            <div class="form-group">
+              <label for="input-amount-words">Total Invoice Amount in Words</label>
+              <textarea id="input-amount-words" rows="2" class="form-control font-medium"
+                placeholder="Auto-generated in Indian Rupees format..."></textarea>
+            </div>
+          </div>
+
+          <!-- Section 6: Bank Account & E-Seal / E-Signature -->
+          <div class="form-section-card" data-section-panel="6">
+            <div class="section-card-title">
+              <span class="step-num">6</span>
+              <h3>Bank Details, Watermark, E-Seal &amp; E-Signature</h3>
+            </div>
+
+            <div class="form-group">
+              <label for="select-bank-details">Select Bank Account</label>
+              <select id="select-bank-details" class="form-control">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="input-custom-bank">Bank Details Display Content</label>
+              <textarea id="input-custom-bank" rows="4" class="form-control font-mono text-sm"></textarea>
+            </div>
+
+            <!-- Watermark Toggle -->
+            <div class="toggle-upload-box toggle-box-standalone">
+              <div class="toggle-header">
+                <label class="custom-toggle">
+                  <input type="checkbox" id="toggle-include-watermark" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-title">Show KPP Watermark on Bill</span>
+              </div>
+              <p class="toggle-helper-text">The faint background monogram, exactly as printed on the original
+                letterhead. Toggle off for a plain white background.</p>
+            </div>
+
+            <!-- Terms and Conditions Toggle -->
+            <div class="toggle-upload-box toggle-box-standalone">
+              <div class="toggle-header">
+                <label class="custom-toggle">
+                  <input type="checkbox" id="toggle-include-terms" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-title">Show Terms &amp; Conditions on Bill</span>
+              </div>
+              <p class="toggle-helper-text">Toggle off to leave that box empty on the bill — nothing is printed
+                there.</p>
+            </div>
+
+            <div class="seal-signature-controls">
+              <!-- E-Seal Controls -->
+              <div class="toggle-upload-box">
+                <div class="toggle-header">
+                  <label class="custom-toggle">
+                    <input type="checkbox" id="toggle-include-seal" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span class="toggle-title">Include E-Seal on Bill</span>
+                </div>
+                <div class="upload-wrapper" id="seal-upload-wrapper">
+                  <input type="file" id="upload-seal-file" accept="image/*" class="file-input-hidden">
+                  <label for="upload-seal-file" class="file-upload-btn">
+                    <span>📁 Upload Custom Seal</span>
+                  </label>
+                  <button type="button" class="btn-text-sm" id="btn-reset-seal">Use Default Seal</button>
+                </div>
+              </div>
+
+              <!-- E-Signature Controls -->
+              <div class="toggle-upload-box">
+                <div class="toggle-header">
+                  <label class="custom-toggle">
+                    <input type="checkbox" id="toggle-include-sign" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span class="toggle-title">Include E-Signature on Bill</span>
+                </div>
+                <div class="upload-wrapper" id="sign-upload-wrapper">
+                  <input type="file" id="upload-sign-file" accept="image/*" class="file-input-hidden">
+                  <label for="upload-sign-file" class="file-upload-btn">
+                    <span>📁 Upload Custom Signature</span>
+                  </label>
+                  <button type="button" class="btn-text-sm" id="btn-reset-sign">Use Default Sign</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </form>
+
+        <!-- Panel Footer: quick Previous / Next between sections -->
+        <div class="panel-footer no-print">
+          <button type="button" class="btn btn-outline" id="btn-panel-prev">&larr; Previous</button>
+          <span class="panel-footer-position" id="panel-footer-position">Section 1 of 6</span>
+          <button type="button" class="btn btn-primary" id="btn-panel-next">Next &rarr;</button>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           RIGHT PANEL: LIVE A4 INVOICE SHEET PREVIEW (SHOWN ONLY IN PREVIEW MODE)
+           ===================================================================== -->
+      <section class="invoice-preview-container" id="invoice-preview-container">
+
+        <div class="preview-toolbar no-print">
+          <div class="toolbar-left">
+            <button class="btn btn-sm btn-outline btn-back-to-edit" id="btn-back-to-edit">
+              <span class="btn-icon">&larr;</span><span class="btn-label">Back to Edit</span>
+            </button>
+            <span class="preview-tag"><span class="btn-icon">📄</span><span class="btn-label">Invoice Preview</span></span>
+            <span class="preview-hint">Review the bill, then download &bull; A4 print-ready format</span>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-sm btn-outline" id="btn-zoom-fit">
+              <span class="btn-icon">🔍</span><span class="btn-label">Fit Page</span>
+            </button>
+            <button class="btn btn-sm btn-download-pdf" id="btn-download-pdf-sheet">
+              <span class="btn-icon">📥</span><span class="btn-label">Download PDF</span>
+            </button>
+            <button class="btn btn-sm btn-outline" id="btn-print-sheet">
+              <span class="btn-icon">🖨️</span><span class="btn-label">Print</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- The Actual Printable A4 Invoice Sheet Component -->
+        <div class="invoice-sheet-viewport">
+          <!-- Scale box: JS (fitInvoicePreview in script.js) shrinks the sheet to fit
+               narrow screens via CSS transform, and sizes this wrapper to match so
+               there is no leftover blank space around the scaled-down sheet. -->
+          <div class="invoice-sheet-scale-box" id="invoice-sheet-scale-box">
+          <div id="invoice-printable-sheet" class="invoice-a4-sheet">
+
+            <!-- Background Watermark Layer (toggle-controlled, exact size/position
+                 extracted from invoice_template.pdf) -->
+            <div class="invoice-watermark-layer" id="sheet-watermark-layer">
+              <img src="watermark_kpp.png" alt="" id="sheet-watermark-img">
+            </div>
+
+            <!-- Single Main Master Table for 100% Pixel-Accurate Invoice Layout -->
+            <table class="kpp-invoice-master-table">
+              <colgroup>
+                <col class="col-sr">
+                <col class="col-product">
+                <col class="col-hsn">
+                <col class="col-meter">
+                <col class="col-qty">
+                <col class="col-rate">
+                <col class="col-amount">
+              </colgroup>
+
+              <!-- 1. Top Header Row (Vinayagar + Company Details + GSTIN + Cell) -->
+              <thead>
+                <tr>
+                  <th colspan="7" class="cell-invoice-header">
+
+                    <!-- Copy Type Label Top Right -->
+                    <div class="invoice-copy-badge" id="sheet-copy-type">Original for Recipient</div>
+
+                    <div class="header-inner-flex">
+
+                      <!-- Left: Vinayagar Logo -->
+                      <div class="vinayagar-logo-wrapper">
+                        <img src="vinayagar.png" alt="Vinayagar" class="sheet-vinayagar-img" id="sheet-vinayagar-img">
+                      </div>
+
+                      <!-- Center Company Info -->
+                      <div class="header-company-info">
+                        <h1 class="company-name">K.P. PARAMATHMAN &amp; BROTHERS</h1>
+                        <p class="company-subtitle">High Class Hand-Loom Silk Saree Manufacturers</p>
+                        <p class="company-address">#97, Gangaiyamman Koil Street, KILPATTU - 606 907</p>
+                        <p class="company-location">Polur Tk. (Via) Arani (Tvm. Dt.)</p>
+                      </div>
+
+                      <!-- Right GST & Phone Block -->
+                      <div class="header-contact-info">
+                        <div class="gstin-row">
+                          <span class="contact-lbl">GSTIN :</span>
+                          <span class="contact-val font-bold">33BMXPP5419A1ZX</span>
+                        </div>
+                        <div class="cell-row">
+                          <span class="contact-lbl">Cell :</span>
+                          <span class="contact-val">9952446177</span>
+                        </div>
+                        <div class="cell-row">
+                          <span class="contact-lbl">Cell :</span>
+                          <span class="contact-val">9600686854</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </th>
+                </tr>
+
+                <!-- 2. TAX INVOICE TITLE BANNER -->
+                <tr>
+                  <th colspan="7" class="cell-tax-invoice-banner">
+                    <span class="tax-invoice-heading">TAX INVOICE</span>
+                  </th>
+                </tr>
+
+                <!-- 3. DETAILS OF RECEIVER & INVOICE META GRID ROW -->
+                <tr>
+                  <!-- Left Side: Billed To / Details of Receiver -->
+                  <td colspan="3" class="cell-billed-to-box">
+                    <div class="billed-to-inner">
+                      <div class="box-title-underline">Details of Receiver Billed to:</div>
+
+                      <div class="receiver-details-content">
+                        <div class="receiver-to-line">
+                          <span class="lbl-to">To :</span>
+                          <span class="val-to font-bold" id="sheet-billed-name">M/s. Sri Lakshmi Silks &amp;
+                            Sarees</span>
+                        </div>
+                        <div class="receiver-address-block" id="sheet-billed-address">
+                          Door No. 45/12, Gandhi Bazaar Road,<br>
+                          Near Flower Market, Kanchipuram - 631 501
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Right Side: Invoice Meta Data -->
+                  <td colspan="4" class="cell-meta-box">
+                    <div class="meta-inner-grid">
+
+                      <div class="meta-line-item">
+                        <span class="meta-lbl">Invoice No. :</span>
+                        <span class="meta-val font-bold" id="sheet-invoice-no">101</span>
+                      </div>
+
+                      <div class="meta-line-item">
+                        <span class="meta-lbl">Invoice Date :</span>
+                        <span class="meta-val" id="sheet-invoice-date">21-08-2026</span>
+                      </div>
+
+                      <div class="meta-line-item">
+                        <span class="meta-lbl">Reverse Charge :</span>
+                        <span class="meta-val" id="sheet-reverse-charge">NO</span>
+                      </div>
+
+                      <div class="meta-line-item meta-split">
+                        <div class="meta-sub">
+                          <span class="meta-lbl">STATE :</span>
+                          <span class="meta-val" id="sheet-state-name">TAMIL NADU</span>
+                        </div>
+                        <div class="meta-sub text-right">
+                          <span class="meta-lbl">State Code :</span>
+                          <span class="meta-val" id="sheet-state-code">33</span>
+                        </div>
+                      </div>
+
+                      <div class="meta-line-item meta-split">
+                        <div class="meta-sub">
+                          <span class="meta-lbl">Transportation Mode :</span>
+                          <span class="meta-val" id="sheet-transport-mode">Road</span>
+                        </div>
+                        <div class="meta-sub text-right">
+                          <span class="meta-lbl">Vehicle :</span>
+                          <span class="meta-val uppercase font-mono" id="sheet-vehicle-no">TN 25 AB 1234</span>
+                        </div>
+                      </div>
+
+                      <div class="meta-line-item">
+                        <span class="meta-lbl">Date of Supply :</span>
+                        <span class="meta-val" id="sheet-supply-date">21-08-2026</span>
+                      </div>
+
+                      <div class="meta-line-item">
+                        <span class="meta-lbl">Place of Supply :</span>
+                        <span class="meta-val" id="sheet-place-supply">Kilpattu</span>
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 3b. GSTIN — its own full-width row, exactly as in invoice_template.pdf -->
+                <tr>
+                  <th colspan="7" class="cell-gstin-row">
+                    <span class="lbl-gstin font-bold">GSTIN :</span>
+                    <span class="val-gstin font-bold font-mono" id="sheet-billed-gstin">33AAAAA0000A1Z5</span>
+                  </th>
+                </tr>
+
+                <!-- 4. PRODUCT TABLE COLUMN HEADERS -->
+                <tr class="table-col-headers">
+                  <th class="th-sr">Sr.<br>No.</th>
+                  <th class="th-product">Name of the Product</th>
+                  <th class="th-hsn">HSN</th>
+                  <th class="th-meter">Meter</th>
+                  <th class="th-qty">Qty</th>
+                  <th class="th-rate">Rate</th>
+                  <th class="th-amount">Amount</th>
+                </tr>
+              </thead>
+
+              <!-- 5. PRODUCT ITEMS ROWS (UP TO 15 ROWS) -->
+              <tbody id="sheet-items-tbody">
+                <!-- 15 Rows dynamically populated with active rows & empty padding rows -->
+              </tbody>
+
+              <!-- 6. TOTAL ROW (ITEMS SUB-TOTAL) -->
+              <tfoot>
+                <tr class="row-items-total">
+                  <td colspan="4" class="cell-total-label font-bold text-right">Total :</td>
+                  <td class="cell-total-qty font-bold text-center" id="sheet-total-qty">0</td>
+                  <td class="cell-empty-divider"></td>
+                  <td class="cell-total-amount font-bold text-right" id="sheet-items-subtotal">0.00</td>
+                </tr>
+
+                <!-- 7. WORDS & TAX BREAKDOWN COMBINED SECTION -->
+                <tr>
+                  <!-- Left Side: Amount in Words, Bank Details, Terms & Seal -->
+                  <td colspan="3" class="cell-bottom-left">
+                    <div class="bottom-left-inner">
+
+                      <!-- Total in Words Block -->
+                      <div class="amount-in-words-row">
+                        <div class="words-title font-bold">Total Invoice Amount in Words :</div>
+                        <div class="words-content font-bold" id="sheet-amount-words">Zero Rupees Only</div>
+                      </div>
+
+                      <!-- Bank Details + Terms (stacked) alongside Seal Box (tall column, exactly as in the template) -->
+                      <div class="bank-and-seal-flex">
+                        <div class="bank-terms-stack">
+                          <div class="bank-details-box">
+                            <div class="bank-box-title font-bold">BANK DETAILS :</div>
+                            <div class="bank-content-lines" id="sheet-bank-content">
+                              Bank : State Bank of India<br>
+                              A/C No : 38291048291<br>
+                              IFSC : SBIN0001234<br>
+                              Branch : Arani / Kilpattu
+                            </div>
+                          </div>
+
+                          <!-- Terms and Conditions — the "Terms and Conditions :" title
+                               is always shown; only the numbered list itself is toggled
+                               off/on and prints/shows empty when off. -->
+                          <div class="terms-conditions-row">
+                            <div class="terms-title font-bold">Terms and Conditions :</div>
+                            <ol class="terms-list" id="sheet-terms-list">
+                              <li>Goods once sold will not be taken back or exchanged.</li>
+                              <li>All disputes are subject to Arani Jurisdiction only.</li>
+                              <li>Interest @ 18% p.a. if payment not made on due date.</li>
+                            </ol>
+                          </div>
+                        </div>
+
+                        <!-- Seal Box: own tall column to the right, spans full Bank+Terms height -->
+                        <div class="seal-display-box" id="sheet-seal-container">
+                          <div class="seal-img-wrapper" id="sheet-seal-img-wrapper">
+                            <!-- E-Seal Rendered Here: default is a canvas-generated round
+                                 stamp (script.js), swapped for the uploaded image if any -->
+                            <img src="" alt="E-Seal" id="sheet-default-seal" class="default-rendered-seal-img">
+                            <img src="" alt="E-Seal" id="sheet-custom-seal-img" class="uploaded-seal-img"
+                              style="display:none;">
+                          </div>
+                          <div class="seal-placeholder-text">(seal)</div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </td>
+
+                  <!-- Right Side: Financial Taxes & Totals Breakdown -->
+                  <td colspan="4" class="cell-bottom-right">
+                    <table class="tax-calculation-subtable">
+                      <tr>
+                        <td class="tax-lbl">Discount :</td>
+                        <td class="tax-val text-right" id="sheet-discount-val">0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl font-bold">Total Amount Before Tax :</td>
+                        <td class="tax-val text-right font-bold" id="sheet-before-tax-val">0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl">Add : CGST <span id="sheet-cgst-pct-label">2.5</span>% :</td>
+                        <td class="tax-val text-right" id="sheet-cgst-val">0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl">Add : SGST <span id="sheet-sgst-pct-label">2.5</span>% :</td>
+                        <td class="tax-val text-right" id="sheet-sgst-val">0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl">Add : IGST <span id="sheet-igst-pct-label">0</span>% :</td>
+                        <td class="tax-val text-right" id="sheet-igst-val">0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl font-bold">Tax Amount : GST :</td>
+                        <td class="tax-val text-right font-bold" id="sheet-tax-amount-val">0.00</td>
+                      </tr>
+                      <tr class="row-highlight-grand-total">
+                        <td class="tax-lbl grand-lbl">Total Amount After Tax :</td>
+                        <td class="tax-val grand-val text-right" id="sheet-after-tax-val">₹ 0.00</td>
+                      </tr>
+                      <tr>
+                        <td class="tax-lbl">GST Payable on Reverse Charge :</td>
+                        <td class="tax-val text-right" id="sheet-reverse-charge-val">0.00</td>
+                      </tr>
+                    </table>
+
+                    <!-- Declaration & Authorized Signatory Block -->
+                    <div class="signature-declaration-box">
+                      <p class="certify-text">Certified that the Particulars given above are true and Correct</p>
+                      <p class="company-sign-title font-bold">For K. P. PARAMATHMAN &amp; BROTHERS.</p>
+
+                      <!-- E-Signature Area -->
+                      <div class="signature-wrapper" id="sheet-signature-container">
+                        <img src="" alt="Signature" id="sheet-default-signature" class="default-rendered-signature-img">
+                        <img src="" alt="E-Signature" id="sheet-custom-signature-img" class="uploaded-signature-img"
+                          style="display:none;">
+                      </div>
+
+                      <p class="auth-signatory-lbl font-bold">Authorised Signatory</p>
+                    </div>
+
+                  </td>
+                </tr>
+              </tfoot>
+
+            </table>
+
+          </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </section>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container no-print"></div>
+
+  <!-- Exact Master PDF Generator (jsPDF vector coordinates) -->
+  <script src="generateInvoicePDF.js"></script>
+  <!-- Custom Scripts -->
+  <script src="script.js"></script>
+</body>
+
+</html>
